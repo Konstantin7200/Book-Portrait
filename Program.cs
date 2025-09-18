@@ -12,6 +12,7 @@ class Program
         string path = @"C:\Users\kosta\source\repos\TextToImage\TextToImage\";
         string text = readFile(path+bookName);
         text = text.ToLower();
+        graphics.Clear(Color.White);
         getColorsFromText(text);
         bitmap.Save(path+"BookPortrait.png", ImageFormat.Png);
     }
@@ -69,6 +70,8 @@ class Program
 }; 
     static Bitmap bitmap = new Bitmap(300, 300);
     static Graphics graphics = Graphics.FromImage(bitmap);
+    static SolidBrush brush = new SolidBrush(Color.Red);
+
     static string readFile(string path)
     {
         return File.ReadAllText(path);
@@ -77,30 +80,31 @@ class Program
     static void getColorsFromText(string text)
     {
         string[] splittedText = Regex.Split(text, @"[\p{P}\s\r\n]+");
+        string foundColor;
+        int imageSize = 300;
+        int pixelSize = 10;
         int x = 0, y = 0;
-        graphics.Clear(Color.White);
         foreach (string word in splittedText)
         {
            
-            string foundColor = dict.Keys.FirstOrDefault(key => word.Contains(key));
+            foundColor = dict.Keys.FirstOrDefault(key => word.Contains(key));
             if (foundColor != null)
             {
-                x += 10;
-                if (x == 300)
-                {
-                    y += 10;
-                    x = 0;
-                }
-                Console.WriteLine(foundColor);
-                drawBookPortrait(dict[foundColor],x,y);
+                drawPixel(dict[foundColor],ref x,ref y,imageSize,pixelSize);
             }
         }
 
     }
-    static void drawBookPortrait(Color color,int x,int y)
-    {
 
-        SolidBrush brush = new SolidBrush(Color.Red);
+    static void drawPixel(Color color,ref int x,ref int y,int imageSize,int pixelSize)
+    {
+        x += pixelSize;
+        if (x == imageSize)
+        {
+            y += pixelSize;
+            x = 0;
+        }
+        //Console.WriteLine(color);
         brush.Color = color;
         graphics.FillRectangle(brush, x, y, 10, 10);
     }
